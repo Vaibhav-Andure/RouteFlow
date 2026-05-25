@@ -57,7 +57,7 @@ export function AnalyticsChart({
         </Pie>
         <Tooltip />
         <Legend
-          formatter={(value, entry) => {
+  formatter={(value: number | string, entry: any) =>  {
             const percentage =
               totalDeliveries > 0 && entry.payload
                 ? ((entry.payload.value / totalDeliveries) * 100).toFixed(2)
