@@ -709,6 +709,33 @@ function SidebarMenuSubButton({
   )
 }
 
+const SidebarGroupHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "flex items-center px-3 py-2 text-xs font-semibold uppercase text-muted-foreground",
+      className
+    )}
+    {...props}
+  />
+))
+SidebarGroupHeader.displayName = "SidebarGroupHeader"
+
+const SidebarGroupTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("truncate", className)}
+    {...props}
+  />
+))
+SidebarGroupTitle.displayName = "SidebarGroupTitle"
+
 export {
   Sidebar,
   SidebarContent,
@@ -716,7 +743,9 @@ export {
   SidebarGroup,
   SidebarGroupAction,
   SidebarGroupContent,
+  SidebarGroupHeader,
   SidebarGroupLabel,
+  SidebarGroupTitle,
   SidebarHeader,
   SidebarInput,
   SidebarInset,

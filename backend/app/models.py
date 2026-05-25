@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timezone
+from enum import Enum
 
 from pydantic import EmailStr
 from sqlalchemy import DateTime
@@ -54,6 +55,7 @@ class User(UserBase, table=True):
         sa_type=DateTime(timezone=True),  # type: ignore
     )
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    deliveries: list["Delivery"] = Relationship(back_populates="owner", cascade_delete=True)
 
 
 # Properties to return via API, id is always required
@@ -108,6 +110,60 @@ class ItemsPublic(SQLModel):
     count: int
 
 
+# Delivery Status Enum
+class DeliveryStatus(str, Enum):
+    PENDING = "PENDING"
+    IN_TRANSIT = "IN_TRANSIT"
+    DELIVERED = "DELIVERED"
+    CANCELLED = "CANCELLED"
+
+
+# Shared properties
+class DeliveryBase(SQLModel):
+    customer_name: str = Field(min_length=1, max_length=255)
+    latitude: float = Field(ge=-90.0, le=90.0)
+    longitude: float = Field(ge=-180.0, le=180.0)
+    status: DeliveryStatus = Field(default=DeliveryStatus.PENDING)
+
+
+# Properties to receive on delivery creation
+class DeliveryCreate(DeliveryBase):
+    pass
+
+
+# Properties to receive on delivery update
+class DeliveryUpdate(DeliveryBase):
+    customer_name: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore[assignment]
+    latitude: float | None = Field(default=None, ge=-90.0, le=90.0)  # type: ignore[assignment]
+    longitude: float | None = Field(default=None, ge=-180.0, le=180.0)  # type: ignore[assignment]
+    status: DeliveryStatus | None = Field(default=None)  # type: ignore[assignment]
+
+
+# Database model, database table inferred from class name
+class Delivery(DeliveryBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    owner_id: uuid.UUID = Field(
+        foreign_key="user.id", nullable=False, ondelete="CASCADE"
+    )
+    owner: User | None = Relationship(back_populates="deliveries")
+
+
+# Properties to return via API, id is always required
+class DeliveryPublic(DeliveryBase):
+    id: uuid.UUID
+    owner_id: uuid.UUID
+    created_at: datetime | None = None
+
+
+class DeliveriesPublic(SQLModel):
+    data: list[DeliveryPublic]
+    count: int
+
+
 # Generic message
 class Message(SQLModel):
     message: str
@@ -127,3 +183,45 @@ class TokenPayload(SQLModel):
 class NewPassword(SQLModel):
     token: str
     new_password: str = Field(min_length=8, max_length=128)
+
+
+# Analytics Schemas
+class DailyDeliveryStat(SQLModel):
+    date: str
+    count: int
+
+
+class AnalyticsSummary(SQLModel):
+    total_deliveries: int
+    pending: int
+    in_transit: int
+    delivered: int
+    cancelled: int
+    completion_rate: float
+
+
+class AnalyticsResponse(SQLModel):
+    summary: AnalyticsSummary
+    daily_deliveries: list[DailyDeliveryStat]
+
+
+# Route Optimization Schemas
+class Coordinate(SQLModel):
+    latitude: float = Field(ge=-90.0, le=90.0)
+    longitude: float = Field(ge=-180.0, le=180.0)
+
+class DeliveryLocation(Coordinate):
+    id: uuid.UUID
+
+class RouteOptimizationRequest(SQLModel):
+    warehouse: Coordinate
+    deliveries: list[DeliveryLocation]
+
+class RouteOrder(SQLModel):
+    delivery_id: uuid.UUID
+    order: int
+
+class RouteOptimizationResponse(SQLModel):
+    optimized_route: list[RouteOrder]
+    total_distance_km: float
+    estimated_time_minutes: float

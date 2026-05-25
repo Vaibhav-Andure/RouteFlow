@@ -3,7 +3,134 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AnalyticsGetAnalyticsResponse, DeliveriesReadDeliveriesData, DeliveriesReadDeliveriesResponse, DeliveriesCreateDeliveryData, DeliveriesCreateDeliveryResponse, DeliveriesReadDeliveryData, DeliveriesReadDeliveryResponse, DeliveriesUpdateDeliveryData, DeliveriesUpdateDeliveryResponse, DeliveriesDeleteDeliveryData, DeliveriesDeleteDeliveryResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, OptimizationOptimizeDeliveryRouteData, OptimizationOptimizeDeliveryRouteResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+
+export class AnalyticsService {
+    /**
+     * Get Analytics
+     * Retrieve delivery analytics.
+     * Requires authentication.
+     * @returns AnalyticsResponse Successful Response
+     * @throws ApiError
+     */
+    public static getAnalytics(): CancelablePromise<AnalyticsGetAnalyticsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/analytics/'
+        });
+    }
+}
+
+export class DeliveriesService {
+    /**
+     * Read Deliveries
+     * Retrieve deliveries.
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns DeliveriesPublic Successful Response
+     * @throws ApiError
+     */
+    public static readDeliveries(data: DeliveriesReadDeliveriesData = {}): CancelablePromise<DeliveriesReadDeliveriesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/deliveries/',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Delivery
+     * Create new delivery.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns DeliveryPublic Successful Response
+     * @throws ApiError
+     */
+    public static createDelivery(data: DeliveriesCreateDeliveryData): CancelablePromise<DeliveriesCreateDeliveryResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/deliveries/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Read Delivery
+     * Get delivery by ID.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns DeliveryPublic Successful Response
+     * @throws ApiError
+     */
+    public static readDelivery(data: DeliveriesReadDeliveryData): CancelablePromise<DeliveriesReadDeliveryResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/deliveries/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Delivery
+     * Update a delivery.
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns DeliveryPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateDelivery(data: DeliveriesUpdateDeliveryData): CancelablePromise<DeliveriesUpdateDeliveryResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/v1/deliveries/{id}',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Delivery
+     * Delete a delivery.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteDelivery(data: DeliveriesDeleteDeliveryData): CancelablePromise<DeliveriesDeleteDeliveryResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/deliveries/{id}',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
 
 export class ItemsService {
     /**
@@ -206,6 +333,29 @@ export class LoginService {
             path: {
                 email: data.email
             },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class OptimizationService {
+    /**
+     * Optimize Delivery Route
+     * Calculate the optimal delivery route using Google OR-Tools (Traveling Salesperson Problem).
+     * Requires authentication.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns RouteOptimizationResponse Successful Response
+     * @throws ApiError
+     */
+    public static optimizeDeliveryRoute(data: OptimizationOptimizeDeliveryRouteData): CancelablePromise<OptimizationOptimizeDeliveryRouteResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/optimization/optimize-route',
+            body: data.requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: 'Validation Error'
             }
