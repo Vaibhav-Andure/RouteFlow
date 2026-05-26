@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AnalyticsGetAnalyticsResponse, DeliveriesReadDeliveriesData, DeliveriesReadDeliveriesResponse, DeliveriesCreateDeliveryData, DeliveriesCreateDeliveryResponse, DeliveriesReadDeliveryData, DeliveriesReadDeliveryResponse, DeliveriesUpdateDeliveryData, DeliveriesUpdateDeliveryResponse, DeliveriesDeleteDeliveryData, DeliveriesDeleteDeliveryResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, OptimizationOptimizeDeliveryRouteData, OptimizationOptimizeDeliveryRouteResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AnalyticsGetAnalyticsResponse, CustomersReadCustomerDeliveriesData, CustomersReadCustomerDeliveriesResponse, DeliveriesReadDeliveriesData, DeliveriesReadDeliveriesResponse, DeliveriesCreateDeliveryData, DeliveriesCreateDeliveryResponse, DeliveriesReadDeliveryData, DeliveriesReadDeliveryResponse, DeliveriesUpdateDeliveryData, DeliveriesUpdateDeliveryResponse, DeliveriesDeleteDeliveryData, DeliveriesDeleteDeliveryResponse, DriversReadDriverDeliveriesData, DriversReadDriverDeliveriesResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, OptimizationOptimizeDeliveryRouteData, OptimizationOptimizeDeliveryRouteResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AnalyticsService {
     /**
@@ -21,10 +21,35 @@ export class AnalyticsService {
     }
 }
 
+export class CustomersService {
+    /**
+     * Read Customer Deliveries
+     * Retrieve only deliveries belonging to the current customer user.
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns DeliveriesPublic Successful Response
+     * @throws ApiError
+     */
+    public static readCustomerDeliveries(data: CustomersReadCustomerDeliveriesData = {}): CancelablePromise<CustomersReadCustomerDeliveriesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/customers/me/deliveries',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
 export class DeliveriesService {
     /**
      * Read Deliveries
-     * Retrieve deliveries.
+     * Retrieve all deliveries. Restricted to ADMIN and DISPATCHER roles.
      * @param data The data for the request.
      * @param data.skip
      * @param data.limit
@@ -47,7 +72,7 @@ export class DeliveriesService {
     
     /**
      * Create Delivery
-     * Create new delivery.
+     * Create new delivery. Restricted to ADMIN and DISPATCHER roles.
      * @param data The data for the request.
      * @param data.requestBody
      * @returns DeliveryPublic Successful Response
@@ -67,7 +92,7 @@ export class DeliveriesService {
     
     /**
      * Read Delivery
-     * Get delivery by ID.
+     * Get delivery by ID. Enforces strict role-based ownership checks.
      * @param data The data for the request.
      * @param data.id
      * @returns DeliveryPublic Successful Response
@@ -89,6 +114,8 @@ export class DeliveriesService {
     /**
      * Update Delivery
      * Update a delivery.
+     * - ADMIN and DISPATCHER can update any delivery.
+     * - DRIVER can only update the status of their assigned delivery.
      * @param data The data for the request.
      * @param data.id
      * @param data.requestBody
@@ -112,7 +139,7 @@ export class DeliveriesService {
     
     /**
      * Delete Delivery
-     * Delete a delivery.
+     * Delete a delivery. Restricted to ADMIN role.
      * @param data The data for the request.
      * @param data.id
      * @returns Message Successful Response
@@ -124,6 +151,31 @@ export class DeliveriesService {
             url: '/api/v1/deliveries/{id}',
             path: {
                 id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class DriversService {
+    /**
+     * Read Driver Deliveries
+     * Retrieve only deliveries assigned to the current driver user.
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns DeliveriesPublic Successful Response
+     * @throws ApiError
+     */
+    public static readDriverDeliveries(data: DriversReadDriverDeliveriesData = {}): CancelablePromise<DriversReadDriverDeliveriesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/drivers/me/deliveries',
+            query: {
+                skip: data.skip,
+                limit: data.limit
             },
             errors: {
                 422: 'Validation Error'

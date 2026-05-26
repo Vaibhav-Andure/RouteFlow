@@ -23,6 +23,7 @@ from app.models import (
     UsersPublic,
     UserUpdate,
     UserUpdateMe,
+    Driver,
 )
 from app.utils import generate_new_account_email, send_email
 
@@ -38,7 +39,6 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     """
     Retrieve users.
     """
-
     count_statement = select(func.count()).select_from(User)
     count = session.exec(count_statement).one()
 
@@ -47,7 +47,18 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     )
     users = session.exec(statement).all()
 
-    users_public = [UserPublic.model_validate(user) for user in users]
+    users_public = []
+    for user in users:
+        u_pub = UserPublic.model_validate(user)
+        if not user.is_superuser:
+            driver = session.exec(select(Driver).where(Driver.user_id == user.id)).first()
+            if driver:
+                u_pub.phone = driver.phone
+                u_pub.vehicle_type = driver.vehicle_type
+                u_pub.vehicle_capacity = driver.vehicle_capacity
+                u_pub.license_number = driver.license_number
+        users_public.append(u_pub)
+
     return UsersPublic(data=users_public, count=count)
 
 
@@ -65,17 +76,27 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
             detail="The user with this email already exists in the system.",
         )
 
-    user = crud.create_user(session=session, user_create=user_in)
-    if settings.emails_enabled and user_in.email:
-        email_data = generate_new_account_email(
-            email_to=user_in.email, username=user_in.email, password=user_in.password
+    db_user = crud.create_user(session=session, user_create=user_in)
+
+    db_driver = None
+    if not db_user.is_superuser:
+        db_driver = Driver(
+            user_id=db_user.id,
+            phone=user_in.phone or "",
+            vehicle_type=user_in.vehicle_type or "Van",
+            vehicle_capacity=user_in.vehicle_capacity or 50.0,
+            license_number=user_in.license_number or "",
         )
-        send_email(
-            email_to=user_in.email,
-            subject=email_data.subject,
-            html_content=email_data.html_content,
-        )
-    return user
+        session.add(db_driver)
+        session.commit()
+
+    u_pub = UserPublic.model_validate(db_user)
+    if db_driver:
+        u_pub.phone = db_driver.phone
+        u_pub.vehicle_type = db_driver.vehicle_type
+        u_pub.vehicle_capacity = db_driver.vehicle_capacity
+        u_pub.license_number = db_driver.license_number
+    return u_pub
 
 
 @router.patch("/me", response_model=UserPublic)
@@ -85,7 +106,6 @@ def update_user_me(
     """
     Update own user.
     """
-
     if user_in.email:
         existing_user = crud.get_user_by_email(session=session, email=user_in.email)
         if existing_user and existing_user.id != current_user.id:
@@ -97,7 +117,16 @@ def update_user_me(
     session.add(current_user)
     session.commit()
     session.refresh(current_user)
-    return current_user
+    
+    u_pub = UserPublic.model_validate(current_user)
+    if not current_user.is_superuser:
+        driver = session.exec(select(Driver).where(Driver.user_id == current_user.id)).first()
+        if driver:
+            u_pub.phone = driver.phone
+            u_pub.vehicle_type = driver.vehicle_type
+            u_pub.vehicle_capacity = driver.vehicle_capacity
+            u_pub.license_number = driver.license_number
+    return u_pub
 
 
 @router.patch("/me/password", response_model=Message)
@@ -122,11 +151,19 @@ def update_password_me(
 
 
 @router.get("/me", response_model=UserPublic)
-def read_user_me(current_user: CurrentUser) -> Any:
+def read_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
     """
     Get current user.
     """
-    return current_user
+    u_pub = UserPublic.model_validate(current_user)
+    if not current_user.is_superuser:
+        driver = session.exec(select(Driver).where(Driver.user_id == current_user.id)).first()
+        if driver:
+            u_pub.phone = driver.phone
+            u_pub.vehicle_type = driver.vehicle_type
+            u_pub.vehicle_capacity = driver.vehicle_capacity
+            u_pub.license_number = driver.license_number
+    return u_pub
 
 
 @router.delete("/me", response_model=Message)
@@ -154,9 +191,34 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Any:
             status_code=400,
             detail="The user with this email already exists in the system",
         )
-    user_create = UserCreate.model_validate(user_in)
-    user = crud.create_user(session=session, user_create=user_create)
-    return user
+    
+    # 1. Create standard User
+    user_create = UserCreate(
+        email=user_in.email,
+        password=user_in.password,
+        full_name=user_in.full_name,
+        is_superuser=False,
+    )
+    db_user = crud.create_user(session=session, user_create=user_create)
+
+    # 2. Create Driver record
+    db_driver = Driver(
+        user_id=db_user.id,
+        phone=user_in.phone or "",
+        vehicle_type=user_in.vehicle_type or "Van",
+        vehicle_capacity=user_in.vehicle_capacity or 50.0,
+        license_number=user_in.license_number or "",
+    )
+    session.add(db_driver)
+    session.commit()
+
+    # 3. Format response
+    response_user = UserPublic.model_validate(db_user)
+    response_user.phone = db_driver.phone
+    response_user.vehicle_type = db_driver.vehicle_type
+    response_user.vehicle_capacity = db_driver.vehicle_capacity
+    response_user.license_number = db_driver.license_number
+    return response_user
 
 
 @router.get("/{user_id}", response_model=UserPublic)
@@ -167,16 +229,23 @@ def read_user_by_id(
     Get a specific user by id.
     """
     user = session.get(User, user_id)
-    if user == current_user:
-        return user
-    if not current_user.is_superuser:
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user != current_user and not current_user.is_superuser:
         raise HTTPException(
             status_code=403,
             detail="The user doesn't have enough privileges",
         )
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    
+    u_pub = UserPublic.model_validate(user)
+    if not user.is_superuser:
+        driver = session.exec(select(Driver).where(Driver.user_id == user.id)).first()
+        if driver:
+            u_pub.phone = driver.phone
+            u_pub.vehicle_type = driver.vehicle_type
+            u_pub.vehicle_capacity = driver.vehicle_capacity
+            u_pub.license_number = driver.license_number
+    return u_pub
 
 
 @router.patch(
@@ -193,7 +262,6 @@ def update_user(
     """
     Update a user.
     """
-
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(
@@ -208,7 +276,33 @@ def update_user(
             )
 
     db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)
-    return db_user
+
+    db_driver = None
+    if not db_user.is_superuser:
+        driver = session.exec(select(Driver).where(Driver.user_id == db_user.id)).first()
+        if not driver:
+            driver = Driver(user_id=db_user.id, phone="", vehicle_type="Van", vehicle_capacity=50.0, license_number="")
+        
+        if user_in.phone is not None:
+            driver.phone = user_in.phone
+        if user_in.vehicle_type is not None:
+            driver.vehicle_type = user_in.vehicle_type
+        if user_in.vehicle_capacity is not None:
+            driver.vehicle_capacity = user_in.vehicle_capacity
+        if user_in.license_number is not None:
+            driver.license_number = user_in.license_number
+            
+        session.add(driver)
+        session.commit()
+        db_driver = driver
+
+    u_pub = UserPublic.model_validate(db_user)
+    if db_driver:
+        u_pub.phone = db_driver.phone
+        u_pub.vehicle_type = db_driver.vehicle_type
+        u_pub.vehicle_capacity = db_driver.vehicle_capacity
+        u_pub.license_number = db_driver.license_number
+    return u_pub
 
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])

@@ -2,11 +2,8 @@ import {
   Home,
   Users,
   Truck,
-  Plus,
   Map,
-  History,
   BarChart,
-  FileText,
   Settings,
 } from "lucide-react"
 
@@ -24,12 +21,10 @@ import { User } from "./User"
 
 const baseItems: Item[] = [
   { icon: Home, title: "Dashboard", path: "/" },
-  { header: "DELIVERIES", icon: Truck, title: "Deliveries", path: "/deliveries" },
-  { icon: Plus, title: "Create Delivery", path: "/deliveries/create" },
-  { header: "ROUTE MANAGEMENT", icon: Map, title: "Optimize Route", path: "/optimize-route" },
-  { icon: History, title: "Route History", path: "/route-history" },
-  { header: "ANALYTICS", icon: BarChart, title: "Analytics", path: "/analytics" },
-  { icon: FileText, title: "Reports", path: "/reports" },
+  { header: "FLEET & LOGISTICS", icon: Truck, title: "Deliveries", path: "/deliveries" },
+  { icon: Map, title: "Optimization", path: "/optimization" },
+  { header: "METRICS & PREFERENCES", icon: BarChart, title: "Analytics", path: "/analytics" },
+  { icon: Settings, title: "Settings", path: "/settings" },
 ]
 
 export function AppSidebar() {
@@ -38,8 +33,7 @@ export function AppSidebar() {
   const items = currentUser?.is_superuser
     ? [
         ...baseItems,
-        { header: "SYSTEM", icon: Users, title: "Users", path: "/admin/users" },
-        { icon: Settings, title: "Settings", path: "/admin/settings" },
+        { header: "ADMINISTRATION", icon: Users, title: "User Management", path: "/admin/users" },
       ]
     : baseItems
 

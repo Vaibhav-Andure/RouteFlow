@@ -43,6 +43,8 @@ export type DeliveryCreate = {
     latitude: number;
     longitude: number;
     status?: DeliveryStatus;
+    driver_id?: (string | null);
+    customer_id?: (string | null);
 };
 
 export type DeliveryLocation = {
@@ -56,6 +58,8 @@ export type DeliveryPublic = {
     latitude: number;
     longitude: number;
     status?: DeliveryStatus;
+    driver_id?: (string | null);
+    customer_id?: (string | null);
     id: string;
     owner_id: string;
     created_at?: (string | null);
@@ -68,6 +72,8 @@ export type DeliveryUpdate = {
     latitude?: (number | null);
     longitude?: (number | null);
     status?: (DeliveryStatus | null);
+    driver_id?: (string | null);
+    customer_id?: (string | null);
 };
 
 export type HTTPValidationError = {
@@ -143,24 +149,40 @@ export type UserCreate = {
     email: string;
     is_active?: boolean;
     is_superuser?: boolean;
+    role?: UserRole;
     full_name?: (string | null);
     password: string;
+    phone?: (string | null);
+    vehicle_type?: (string | null);
+    vehicle_capacity?: (number | null);
+    license_number?: (string | null);
 };
 
 export type UserPublic = {
     email: string;
     is_active?: boolean;
     is_superuser?: boolean;
+    role?: UserRole;
     full_name?: (string | null);
     id: string;
     created_at?: (string | null);
+    phone?: (string | null);
+    vehicle_type?: (string | null);
+    vehicle_capacity?: (number | null);
+    license_number?: (string | null);
 };
 
 export type UserRegister = {
     email: string;
     password: string;
     full_name?: (string | null);
+    phone?: (string | null);
+    vehicle_type?: (string | null);
+    vehicle_capacity?: (number | null);
+    license_number?: (string | null);
 };
+
+export type UserRole = 'ADMIN' | 'DISPATCHER' | 'DRIVER' | 'CUSTOMER';
 
 export type UsersPublic = {
     data: Array<UserPublic>;
@@ -171,8 +193,13 @@ export type UserUpdate = {
     email?: (string | null);
     is_active?: boolean;
     is_superuser?: boolean;
+    role?: UserRole;
     full_name?: (string | null);
     password?: (string | null);
+    phone?: (string | null);
+    vehicle_type?: (string | null);
+    vehicle_capacity?: (number | null);
+    license_number?: (string | null);
 };
 
 export type UserUpdateMe = {
@@ -191,6 +218,13 @@ export type ValidationError = {
 };
 
 export type AnalyticsGetAnalyticsResponse = (AnalyticsResponse);
+
+export type CustomersReadCustomerDeliveriesData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type CustomersReadCustomerDeliveriesResponse = (DeliveriesPublic);
 
 export type DeliveriesReadDeliveriesData = {
     limit?: number;
@@ -223,6 +257,13 @@ export type DeliveriesDeleteDeliveryData = {
 };
 
 export type DeliveriesDeleteDeliveryResponse = (Message);
+
+export type DriversReadDriverDeliveriesData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type DriversReadDriverDeliveriesResponse = (DeliveriesPublic);
 
 export type ItemsReadItemsData = {
     limit?: number;

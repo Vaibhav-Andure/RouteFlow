@@ -9,6 +9,8 @@ api_router.include_router(users.router)
 api_router.include_router(utils.router)
 api_router.include_router(items.router)
 api_router.include_router(deliveries.router)
+api_router.include_router(deliveries.drivers_router)
+api_router.include_router(deliveries.customers_router)
 api_router.include_router(optimization.router)
 api_router.include_router(analytics.router)
 

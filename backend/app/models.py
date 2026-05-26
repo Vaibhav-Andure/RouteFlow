@@ -11,29 +11,49 @@ def get_datetime_utc() -> datetime:
     return datetime.now(timezone.utc)
 
 
+class UserRole(str, Enum):
+    ADMIN = "ADMIN"
+    DISPATCHER = "DISPATCHER"
+    DRIVER = "DRIVER"
+    CUSTOMER = "CUSTOMER"
+
+
 # Shared properties
 class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
+    role: UserRole = Field(default=UserRole.CUSTOMER)
     full_name: str | None = Field(default=None, max_length=255)
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=128)
+    phone: str | None = Field(default=None, max_length=255)
+    vehicle_type: str | None = Field(default=None, max_length=255)
+    vehicle_capacity: float | None = Field(default=None)
+    license_number: str | None = Field(default=None, max_length=255)
 
 
 class UserRegister(SQLModel):
     email: EmailStr = Field(max_length=255)
     password: str = Field(min_length=8, max_length=128)
     full_name: str | None = Field(default=None, max_length=255)
+    phone: str | None = Field(default=None, max_length=255)
+    vehicle_type: str | None = Field(default=None, max_length=255)
+    vehicle_capacity: float | None = Field(default=None)
+    license_number: str | None = Field(default=None, max_length=255)
 
 
 # Properties to receive via API on update, all are optional
 class UserUpdate(UserBase):
     email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore[assignment]
     password: str | None = Field(default=None, min_length=8, max_length=128)
+    phone: str | None = Field(default=None, max_length=255)
+    vehicle_type: str | None = Field(default=None, max_length=255)
+    vehicle_capacity: float | None = Field(default=None)
+    license_number: str | None = Field(default=None, max_length=255)
 
 
 class UserUpdateMe(SQLModel):
@@ -55,13 +75,37 @@ class User(UserBase, table=True):
         sa_type=DateTime(timezone=True),  # type: ignore
     )
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
-    deliveries: list["Delivery"] = Relationship(back_populates="owner", cascade_delete=True)
+    deliveries: list["Delivery"] = Relationship(
+        back_populates="owner",
+        cascade_delete=True,
+        sa_relationship_kwargs={"foreign_keys": "[Delivery.owner_id]"},
+    )
+
+
+# Database model for Driver details, keeping user table normalized
+class Driver(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(
+        foreign_key="user.id", nullable=False, ondelete="CASCADE"
+    )
+    phone: str = Field(max_length=255)
+    vehicle_type: str = Field(max_length=255)
+    vehicle_capacity: float
+    license_number: str = Field(max_length=255)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
 
 
 # Properties to return via API, id is always required
 class UserPublic(UserBase):
     id: uuid.UUID
     created_at: datetime | None = None
+    phone: str | None = None
+    vehicle_type: str | None = None
+    vehicle_capacity: float | None = None
+    license_number: str | None = None
 
 
 class UsersPublic(SQLModel):
@@ -124,6 +168,8 @@ class DeliveryBase(SQLModel):
     latitude: float = Field(ge=-90.0, le=90.0)
     longitude: float = Field(ge=-180.0, le=180.0)
     status: DeliveryStatus = Field(default=DeliveryStatus.PENDING)
+    driver_id: uuid.UUID | None = Field(default=None, foreign_key="user.id", nullable=True)
+    customer_id: uuid.UUID | None = Field(default=None, foreign_key="user.id", nullable=True)
 
 
 # Properties to receive on delivery creation
@@ -137,6 +183,8 @@ class DeliveryUpdate(DeliveryBase):
     latitude: float | None = Field(default=None, ge=-90.0, le=90.0)  # type: ignore[assignment]
     longitude: float | None = Field(default=None, ge=-180.0, le=180.0)  # type: ignore[assignment]
     status: DeliveryStatus | None = Field(default=None)  # type: ignore[assignment]
+    driver_id: uuid.UUID | None = Field(default=None)  # type: ignore[assignment]
+    customer_id: uuid.UUID | None = Field(default=None)  # type: ignore[assignment]
 
 
 # Database model, database table inferred from class name
@@ -149,7 +197,10 @@ class Delivery(DeliveryBase, table=True):
     owner_id: uuid.UUID = Field(
         foreign_key="user.id", nullable=False, ondelete="CASCADE"
     )
-    owner: User | None = Relationship(back_populates="deliveries")
+    owner: User | None = Relationship(
+        back_populates="deliveries",
+        sa_relationship_kwargs={"foreign_keys": "[Delivery.owner_id]"},
+    )
 
 
 # Properties to return via API, id is always required

@@ -185,6 +185,30 @@ export const DeliveryCreateSchema = {
         status: {
             '$ref': '#/components/schemas/DeliveryStatus',
             default: 'PENDING'
+        },
+        driver_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Driver Id'
+        },
+        customer_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Customer Id'
         }
     },
     type: 'object',
@@ -240,6 +264,30 @@ export const DeliveryPublicSchema = {
         status: {
             '$ref': '#/components/schemas/DeliveryStatus',
             default: 'PENDING'
+        },
+        driver_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Driver Id'
+        },
+        customer_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Customer Id'
         },
         id: {
             type: 'string',
@@ -325,6 +373,30 @@ export const DeliveryUpdateSchema = {
                     type: 'null'
                 }
             ]
+        },
+        driver_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Driver Id'
+        },
+        customer_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Customer Id'
         }
     },
     type: 'object',
@@ -638,6 +710,10 @@ export const UserCreateSchema = {
             title: 'Is Superuser',
             default: false
         },
+        role: {
+            '$ref': '#/components/schemas/UserRole',
+            default: 'CUSTOMER'
+        },
         full_name: {
             anyOf: [
                 {
@@ -679,6 +755,10 @@ export const UserPublicSchema = {
             type: 'boolean',
             title: 'Is Superuser',
             default: false
+        },
+        role: {
+            '$ref': '#/components/schemas/UserRole',
+            default: 'CUSTOMER'
         },
         full_name: {
             anyOf: [
@@ -747,6 +827,12 @@ export const UserRegisterSchema = {
     title: 'UserRegister'
 } as const;
 
+export const UserRoleSchema = {
+    type: 'string',
+    enum: ['ADMIN', 'DISPATCHER', 'DRIVER', 'CUSTOMER'],
+    title: 'UserRole'
+} as const;
+
 export const UserUpdateSchema = {
     properties: {
         email: {
@@ -771,6 +857,10 @@ export const UserUpdateSchema = {
             type: 'boolean',
             title: 'Is Superuser',
             default: false
+        },
+        role: {
+            '$ref': '#/components/schemas/UserRole',
+            default: 'CUSTOMER'
         },
         full_name: {
             anyOf: [

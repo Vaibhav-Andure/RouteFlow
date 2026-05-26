@@ -16,8 +16,18 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
+import { Route as LayoutOptimizationRouteImport } from './routes/_layout/optimization'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
+import { Route as LayoutDriversRouteImport } from './routes/_layout/drivers'
+import { Route as LayoutDeliveriesRouteImport } from './routes/_layout/deliveries'
+import { Route as LayoutCustomersRouteImport } from './routes/_layout/customers'
+import { Route as LayoutAnalyticsRouteImport } from './routes/_layout/analytics'
 import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
+import { Route as LayoutDriversNewRouteImport } from './routes/_layout/drivers.new'
+import { Route as LayoutDriversIdRouteImport } from './routes/_layout/drivers.$id'
+import { Route as LayoutDeliveriesNewRouteImport } from './routes/_layout/deliveries.new'
+import { Route as LayoutDeliveriesIdRouteImport } from './routes/_layout/deliveries.$id'
+import { Route as LayoutCustomersIdRouteImport } from './routes/_layout/customers.$id'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -53,15 +63,65 @@ const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutOptimizationRoute = LayoutOptimizationRouteImport.update({
+  id: '/optimization',
+  path: '/optimization',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutItemsRoute = LayoutItemsRouteImport.update({
   id: '/items',
   path: '/items',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutDriversRoute = LayoutDriversRouteImport.update({
+  id: '/drivers',
+  path: '/drivers',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutDeliveriesRoute = LayoutDeliveriesRouteImport.update({
+  id: '/deliveries',
+  path: '/deliveries',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutCustomersRoute = LayoutCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutAnalyticsRoute = LayoutAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutAdminRoute = LayoutAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutDriversNewRoute = LayoutDriversNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => LayoutDriversRoute,
+} as any)
+const LayoutDriversIdRoute = LayoutDriversIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => LayoutDriversRoute,
+} as any)
+const LayoutDeliveriesNewRoute = LayoutDeliveriesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => LayoutDeliveriesRoute,
+} as any)
+const LayoutDeliveriesIdRoute = LayoutDeliveriesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => LayoutDeliveriesRoute,
+} as any)
+const LayoutCustomersIdRoute = LayoutCustomersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => LayoutCustomersRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -71,8 +131,18 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRoute
+  '/analytics': typeof LayoutAnalyticsRoute
+  '/customers': typeof LayoutCustomersRouteWithChildren
+  '/deliveries': typeof LayoutDeliveriesRouteWithChildren
+  '/drivers': typeof LayoutDriversRouteWithChildren
   '/items': typeof LayoutItemsRoute
+  '/optimization': typeof LayoutOptimizationRoute
   '/settings': typeof LayoutSettingsRoute
+  '/customers/$id': typeof LayoutCustomersIdRoute
+  '/deliveries/$id': typeof LayoutDeliveriesIdRoute
+  '/deliveries/new': typeof LayoutDeliveriesNewRoute
+  '/drivers/$id': typeof LayoutDriversIdRoute
+  '/drivers/new': typeof LayoutDriversNewRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -80,9 +150,19 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRoute
+  '/analytics': typeof LayoutAnalyticsRoute
+  '/customers': typeof LayoutCustomersRouteWithChildren
+  '/deliveries': typeof LayoutDeliveriesRouteWithChildren
+  '/drivers': typeof LayoutDriversRouteWithChildren
   '/items': typeof LayoutItemsRoute
+  '/optimization': typeof LayoutOptimizationRoute
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
+  '/customers/$id': typeof LayoutCustomersIdRoute
+  '/deliveries/$id': typeof LayoutDeliveriesIdRoute
+  '/deliveries/new': typeof LayoutDeliveriesNewRoute
+  '/drivers/$id': typeof LayoutDriversIdRoute
+  '/drivers/new': typeof LayoutDriversNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,9 +172,19 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_layout/admin': typeof LayoutAdminRoute
+  '/_layout/analytics': typeof LayoutAnalyticsRoute
+  '/_layout/customers': typeof LayoutCustomersRouteWithChildren
+  '/_layout/deliveries': typeof LayoutDeliveriesRouteWithChildren
+  '/_layout/drivers': typeof LayoutDriversRouteWithChildren
   '/_layout/items': typeof LayoutItemsRoute
+  '/_layout/optimization': typeof LayoutOptimizationRoute
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/customers/$id': typeof LayoutCustomersIdRoute
+  '/_layout/deliveries/$id': typeof LayoutDeliveriesIdRoute
+  '/_layout/deliveries/new': typeof LayoutDeliveriesNewRoute
+  '/_layout/drivers/$id': typeof LayoutDriversIdRoute
+  '/_layout/drivers/new': typeof LayoutDriversNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,8 +195,18 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
+    | '/analytics'
+    | '/customers'
+    | '/deliveries'
+    | '/drivers'
     | '/items'
+    | '/optimization'
     | '/settings'
+    | '/customers/$id'
+    | '/deliveries/$id'
+    | '/deliveries/new'
+    | '/drivers/$id'
+    | '/drivers/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -114,9 +214,19 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
+    | '/analytics'
+    | '/customers'
+    | '/deliveries'
+    | '/drivers'
     | '/items'
+    | '/optimization'
     | '/settings'
     | '/'
+    | '/customers/$id'
+    | '/deliveries/$id'
+    | '/deliveries/new'
+    | '/drivers/$id'
+    | '/drivers/new'
   id:
     | '__root__'
     | '/_layout'
@@ -125,9 +235,19 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_layout/admin'
+    | '/_layout/analytics'
+    | '/_layout/customers'
+    | '/_layout/deliveries'
+    | '/_layout/drivers'
     | '/_layout/items'
+    | '/_layout/optimization'
     | '/_layout/settings'
     | '/_layout/'
+    | '/_layout/customers/$id'
+    | '/_layout/deliveries/$id'
+    | '/_layout/deliveries/new'
+    | '/_layout/drivers/$id'
+    | '/_layout/drivers/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -189,11 +309,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutSettingsRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/optimization': {
+      id: '/_layout/optimization'
+      path: '/optimization'
+      fullPath: '/optimization'
+      preLoaderRoute: typeof LayoutOptimizationRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/items': {
       id: '/_layout/items'
       path: '/items'
       fullPath: '/items'
       preLoaderRoute: typeof LayoutItemsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/drivers': {
+      id: '/_layout/drivers'
+      path: '/drivers'
+      fullPath: '/drivers'
+      preLoaderRoute: typeof LayoutDriversRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/deliveries': {
+      id: '/_layout/deliveries'
+      path: '/deliveries'
+      fullPath: '/deliveries'
+      preLoaderRoute: typeof LayoutDeliveriesRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/customers': {
+      id: '/_layout/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof LayoutCustomersRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/analytics': {
+      id: '/_layout/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof LayoutAnalyticsRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/admin': {
@@ -203,19 +358,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/drivers/new': {
+      id: '/_layout/drivers/new'
+      path: '/new'
+      fullPath: '/drivers/new'
+      preLoaderRoute: typeof LayoutDriversNewRouteImport
+      parentRoute: typeof LayoutDriversRoute
+    }
+    '/_layout/drivers/$id': {
+      id: '/_layout/drivers/$id'
+      path: '/$id'
+      fullPath: '/drivers/$id'
+      preLoaderRoute: typeof LayoutDriversIdRouteImport
+      parentRoute: typeof LayoutDriversRoute
+    }
+    '/_layout/deliveries/new': {
+      id: '/_layout/deliveries/new'
+      path: '/new'
+      fullPath: '/deliveries/new'
+      preLoaderRoute: typeof LayoutDeliveriesNewRouteImport
+      parentRoute: typeof LayoutDeliveriesRoute
+    }
+    '/_layout/deliveries/$id': {
+      id: '/_layout/deliveries/$id'
+      path: '/$id'
+      fullPath: '/deliveries/$id'
+      preLoaderRoute: typeof LayoutDeliveriesIdRouteImport
+      parentRoute: typeof LayoutDeliveriesRoute
+    }
+    '/_layout/customers/$id': {
+      id: '/_layout/customers/$id'
+      path: '/$id'
+      fullPath: '/customers/$id'
+      preLoaderRoute: typeof LayoutCustomersIdRouteImport
+      parentRoute: typeof LayoutCustomersRoute
+    }
   }
 }
 
+interface LayoutCustomersRouteChildren {
+  LayoutCustomersIdRoute: typeof LayoutCustomersIdRoute
+}
+
+const LayoutCustomersRouteChildren: LayoutCustomersRouteChildren = {
+  LayoutCustomersIdRoute: LayoutCustomersIdRoute,
+}
+
+const LayoutCustomersRouteWithChildren = LayoutCustomersRoute._addFileChildren(
+  LayoutCustomersRouteChildren,
+)
+
+interface LayoutDeliveriesRouteChildren {
+  LayoutDeliveriesIdRoute: typeof LayoutDeliveriesIdRoute
+  LayoutDeliveriesNewRoute: typeof LayoutDeliveriesNewRoute
+}
+
+const LayoutDeliveriesRouteChildren: LayoutDeliveriesRouteChildren = {
+  LayoutDeliveriesIdRoute: LayoutDeliveriesIdRoute,
+  LayoutDeliveriesNewRoute: LayoutDeliveriesNewRoute,
+}
+
+const LayoutDeliveriesRouteWithChildren =
+  LayoutDeliveriesRoute._addFileChildren(LayoutDeliveriesRouteChildren)
+
+interface LayoutDriversRouteChildren {
+  LayoutDriversIdRoute: typeof LayoutDriversIdRoute
+  LayoutDriversNewRoute: typeof LayoutDriversNewRoute
+}
+
+const LayoutDriversRouteChildren: LayoutDriversRouteChildren = {
+  LayoutDriversIdRoute: LayoutDriversIdRoute,
+  LayoutDriversNewRoute: LayoutDriversNewRoute,
+}
+
+const LayoutDriversRouteWithChildren = LayoutDriversRoute._addFileChildren(
+  LayoutDriversRouteChildren,
+)
+
 interface LayoutRouteChildren {
   LayoutAdminRoute: typeof LayoutAdminRoute
+  LayoutAnalyticsRoute: typeof LayoutAnalyticsRoute
+  LayoutCustomersRoute: typeof LayoutCustomersRouteWithChildren
+  LayoutDeliveriesRoute: typeof LayoutDeliveriesRouteWithChildren
+  LayoutDriversRoute: typeof LayoutDriversRouteWithChildren
   LayoutItemsRoute: typeof LayoutItemsRoute
+  LayoutOptimizationRoute: typeof LayoutOptimizationRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAdminRoute: LayoutAdminRoute,
+  LayoutAnalyticsRoute: LayoutAnalyticsRoute,
+  LayoutCustomersRoute: LayoutCustomersRouteWithChildren,
+  LayoutDeliveriesRoute: LayoutDeliveriesRouteWithChildren,
+  LayoutDriversRoute: LayoutDriversRouteWithChildren,
   LayoutItemsRoute: LayoutItemsRoute,
+  LayoutOptimizationRoute: LayoutOptimizationRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
