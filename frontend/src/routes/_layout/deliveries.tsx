@@ -177,11 +177,12 @@ function Deliveries() {
         title="Deliveries"
         description="Dispatch, view, search, and monitor ongoing client deliveries."
       >
-        <Link to="/deliveries/new">
-          <Button className="font-bold flex items-center gap-1.5 shadow-sm hover:scale-[1.02] transition-transform">
-            <Plus className="size-4" /> Create Delivery
-          </Button>
-        </Link>
+        <Button
+          onClick={() => navigate({ to: "/deliveries/new" })}
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 font-bold flex items-center gap-1.5 shadow-sm hover:scale-[1.02] transition-transform"
+        >
+          <Plus className="size-4" /> Create Delivery
+        </Button>
       </PageHeader>
 
       {/* Map panel */}

@@ -52,7 +52,7 @@ const deliveryFormSchema = z.object({
 
 type DeliveryFormValues = z.infer<typeof deliveryFormSchema>
 
-function DeliveryFormPage() {
+function DeliveryFormPage() { console.log('DeliveryFormPage mounted');
   const navigate = useNavigate()
   const search = Route.useSearch() as DeliveriesSearch
   const editId = search.editId
@@ -78,8 +78,8 @@ function DeliveryFormPage() {
       phone: "",
       email: "",
       address: "",
-      latitude: 40.7128, // Default NYC
-      longitude: -74.006,
+      latitude: undefined, // No default coordinate
+      longitude: undefined,
       priority: "LOW",
       driver_id: "",
       window_start: "09:00 AM",
@@ -121,6 +121,7 @@ function DeliveryFormPage() {
 
   // Submit Handler
   const onSubmit = async (values: DeliveryFormValues) => {
+    console.log('Submitting delivery values:', values);
     try {
       const enrichment = {
         phone: values.phone || "",
@@ -485,6 +486,19 @@ function DeliveryFormPage() {
           </Card>
         </div>
       </form>
+        {/* Fallback button in case the primary submit button is hidden */}
+        <div className="mt-4 flex justify-center">
+          <Button
+            type="button"
+            onClick={() => {
+              // Manually trigger form submission
+              handleSubmit(onSubmit)();
+            }}
+            className="w-48 font-bold"
+          >
+            Create Delivery
+          </Button>
+        </div>
     </div>
   )
 }

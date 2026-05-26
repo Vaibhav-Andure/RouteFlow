@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import L from "leaflet"
-import { useTheme } from "next-themes"
 
 interface DeliveryMapProps {
   latitude?: number
@@ -22,7 +21,17 @@ export function DeliveryMap({
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const markerRef = useRef<L.Marker | null>(null)
-  const { resolvedTheme } = useTheme()
+  const [isDark, setIsDark] = useState(false)
+
+  // Detect system theme
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    setIsDark(mediaQuery.matches)
+    
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
 
   // Initialize Map
   useEffect(() => {
@@ -60,7 +69,6 @@ export function DeliveryMap({
       }
     })
 
-    const isDark = resolvedTheme === "dark"
     const tileUrl = isDark
       ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
       : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
@@ -68,7 +76,7 @@ export function DeliveryMap({
     L.tileLayer(tileUrl, {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
     }).addTo(map)
-  }, [resolvedTheme])
+  }, [isDark])
 
   // Update Marker Position
   useEffect(() => {

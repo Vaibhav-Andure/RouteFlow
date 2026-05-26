@@ -168,7 +168,7 @@ class DeliveryBase(SQLModel):
     latitude: float = Field(ge=-90.0, le=90.0)
     longitude: float = Field(ge=-180.0, le=180.0)
     status: DeliveryStatus = Field(default=DeliveryStatus.PENDING)
-    driver_id: uuid.UUID | None = Field(default=None, foreign_key="user.id", nullable=True)
+    driver_id: uuid.UUID | None = Field(default=None, nullable=True)
     customer_id: uuid.UUID | None = Field(default=None, foreign_key="user.id", nullable=True)
 
 

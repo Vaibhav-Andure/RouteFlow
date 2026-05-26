@@ -18,8 +18,8 @@ const STORAGE_KEY = "routeflow_settings_org"
 export default function OrganizationSettings() {
   const [companyName, setCompanyName] = useState("RouteFlow Logistics Corp")
   const [logoUrl, setLogoUrl] = useState("https://routeflow.com/logo.png")
-  const [address, setAddress] = useState("100 Broadway Ave, New York, NY 10005")
-  const [timezone, setTimezone] = useState("America/New_York")
+  const [address, setAddress] = useState("100 MG Road, Bengaluru, Karnataka, India")
+  const [timezone, setTimezone] = useState("Asia/Kolkata")
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY)

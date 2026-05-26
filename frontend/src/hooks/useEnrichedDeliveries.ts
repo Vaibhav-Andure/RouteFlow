@@ -44,10 +44,10 @@ function saveEnrichmentDict(dict: Record<string, EnrichmentData>) {
 export function generateMockEnrichment(id: string, name: string): EnrichmentData {
   const hash = id.split("-").reduce((acc, char) => acc + char.charCodeAt(0), 0)
   
-  const streets = ["Broadway", "Fifth Ave", "Park Ave", "Madison Ave", "Lexington Ave", "Wall St", "Main St", "Oak St"]
+  const streets = ["MG Road", "Brigade Road", "Church Street", "Indiranagar", "Whitefield", "Koramangala", "Electronic City", "HSR Layout"]
   const streetNum = (hash % 800) + 100
   const street = streets[hash % streets.length]
-  const address = `${streetNum} ${street}, New York, NY`
+  const address = `${streetNum} ${street}, Bengaluru, Karnataka, India`
 
   const priorities: ("LOW" | "MEDIUM" | "HIGH")[] = ["LOW", "MEDIUM", "HIGH"]
   const priority = priorities[hash % priorities.length]

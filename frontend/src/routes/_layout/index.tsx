@@ -34,6 +34,11 @@ import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_layout/")({
   component: DashboardPage,
+  beforeLoad: async () => {
+    if (!localStorage.getItem("access_token")) {
+      throw redirect({ to: "/login" });
+    }
+  },
   head: () => ({
     meta: [
       {
@@ -122,7 +127,7 @@ function AdminDashboardContent() {
     },
   ]
 
-  const quickActions = [
+  const adminActions = [
     {
       title: "Create Delivery",
       description: "Add a new delivery to the system",
@@ -141,7 +146,24 @@ function AdminDashboardContent() {
       icon: BarChart,
       path: "/analytics",
     },
-  ]
+  ];
+
+  const driverActions = [
+    {
+      title: "My Deliveries",
+      description: "View your assigned deliveries",
+      icon: Truck,
+      path: "/deliveries",
+    },
+    {
+      title: "Route Map",
+      description: "See your active route on map",
+      icon: Map,
+      path: "/optimization",
+    },
+  ];
+
+  const quickActions = currentUser?.is_superuser ? adminActions : driverActions;
 
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2026, 4, 20),
@@ -308,7 +330,7 @@ function AdminDashboardContent() {
 }
 
 function DriverDashboardContent() {
-  const { user: currentUser } = useAuth()
+  const { user: currentUser, logout } = useAuth()
   const { deliveries, updateDelivery, isLoading } = useEnrichedDeliveries()
 
   // Dynamic KPIs compiled strictly from their assigned deliveries
@@ -388,6 +410,9 @@ function DriverDashboardContent() {
           Welcome back, {currentUser?.full_name || currentUser?.email} 👋 Vehicle: <span className="font-bold text-primary">{currentUser?.vehicle_type || "Standard Van"}</span> (Cap: {currentUser?.vehicle_capacity || 50}kg)
         </p>
       </div>
+          <div className="flex justify-end mt-2">
+            <Button variant="outline" onClick={logout}>Log Out</Button>
+          </div>
 
       {/* Driver KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
